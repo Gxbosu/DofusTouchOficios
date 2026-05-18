@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Oficios</title>
+    <style>
+        :root {
+            --bg-dark: #0b0e11;
+            --bg-panel: #14181f;
+            --bg-input: #1b222b;
+            --border-gold: #c8aa6e;
+            --border-dark: #2a3442;
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-gold: #f3cf8a;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); padding: 25px; min-height: 100vh; }
+        .container { max-width: 1750px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--border-gold); padding-bottom: 15px; }
+        header h1 { color: var(--text-gold); font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; }
+
+        .main-grid { display: grid; grid-template-columns: 400px 1fr 450px; gap: 25px; }
+        @media (max-width: 1400px) { .main-grid { grid-template-columns: 1fr; } }
+
+        .panel { background-color: var(--bg-panel); border: 1px solid var(--border-dark); border-radius: 10px; padding: 22px; height: fit-content; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .panel-title { color: var(--text-gold); font-size: 1.1rem; margin-bottom: 18px; border-bottom: 1px solid var(--border-dark); padding-bottom: 8px; text-transform: uppercase; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        
+        .form-group { margin-bottom: 14px; }
+        label { display: block; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        select, input, textarea { width: 100%; background-color: var(--bg-input); border: 1px solid var(--border-dark); color: var(--text-light); padding: 10px; border-radius: 6px; font-size: 0.9rem; }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: var(--border-gold); }
+
+        .btn { background-color: var(--border-gold); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%; transition: background 0.2s; margin-bottom: 8px; font-size: 0.85rem; }
+        .btn:hover { background-color: #f3cf8a; }
+        .btn-danger { background-color: var(--accent-red); color: #fff; }
+        .btn-danger:hover { background-color: #ff6b6b; }
+        
+        /* Botón de Bonus de Experiencia */
+        .bonus-toggle { background-color: #1e293b; color: var(--text-muted); border: 1px solid var(--border-dark); transition: all 0.3s ease; }
+        .bonus-toggle.active { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: var(--accent-blue); text-shadow: 0 0 8px rgba(59, 130, 246, 0.6); }
+
+        /* Lista de recetas */
+        .recipes-list { display: flex; flex-direction: column; gap: 12px; max-height: 750px; overflow-y: auto; padding-right: 5px; }
+        .recipe-card { background-color: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; padding: 14px; cursor: pointer; transition: all 0.2s; position: relative; }
+        .recipe-card:hover:not(.disabled) { border-color: var(--border-gold); }
+        .recipe-card.selected { border-color: var(--accent-green); background-color: rgba(34, 197, 94, 0.03); }
+        .recipe-card.disabled { opacity: 0.35; cursor: not-allowed; border-color: #4a1d1d; }
+        
+        .recipe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .recipe-meta h4 { font-size: 1rem; color: #fff; }
+        .recipe-meta span { font-size: 0.75rem; color: var(--text-muted); }
+
+        .materials-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 6px; }
+        .mat-slot { background-color: var(--bg-panel); border: 1px solid var(--border-dark); padding: 4px; border-radius: 4px; text-align: center; font-size: 0.7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .mat-qty { color: var(--text-gold); font-weight: bold; display: block; }
+
+        .badge { font-size: 0.65rem; padding: 3px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+        .badge.xp { background-color: rgba(200, 170, 110, 0.15); color: var(--text-gold); }
+        .badge.error { background-color: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+
+        /* Lista de Compras */
+        .shopping-item { background-color: var(--bg-input); padding: 10px; border-radius: 6px; margin-bottom: 6px; display: grid; grid-template-columns: 1fr 90px 100px; align-items: center; gap: 10px; border-left: 4px solid var(--border-gold); }
+        .shopping-item .mat-name { font-weight: 500; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .shopping-item .mat-total-qty { color: var(--text-gold); font-weight: bold; text-align: right; font-size: 0.95rem; }
+        .shopping-item input { padding: 5px; font-size: 0.8rem; text-align: center; border-color: var(--border-dark); }
+
+        .stat-box { background-color: var(--bg-input); padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--text-gold); }
+        .creator-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Calculadora de Oficios</h1>
+    </header>
+
+    <div class="main-grid">
+        <div class="panel">
+            <div class="panel-title">Progreso & Multiplicadores</div>
+            
+            <button class="btn bonus-toggle" id="btn-bonus-xp">⚡ BONUS XP (+50% Activo)</button>
+
+            <div class="form-group" style="margin-top: 10px;">
+                <label for="prof-select">Oficio Activo</label>
+                <select id="prof-select">
+                    <optgroup label="Recolección">
+                        <option value="cazador">Cazador 🍖</option>
+                        <option value="campesino">Campesino 🌾</option>
+                        <option value="minero">Minero ⛏️</option>
+                        <option value="lenador">Leñador 🪓</option>
+                        <option value="pescador">Pescador 🎣</option>
+                        <option value="alquimista">Alquimista 🧪</option>
+                    </optgroup>
+                    <optgroup label="Crafteos">
+                        <option value="joyero" selected>Joyero 💎</option>
+                        <option value="sastre">Sastre 👕</option>
+                        <option value="zapatero">Zapatero 👞</option>
+                        <option value="panadero">Panadero 🥖</option>
+                        <option value="carnicero">Carnicero 🔪</option>
+                        <option value="pescadero">Pescadero 🐟</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="creator-grid">
+                <div class="form-group">
+                    <label for="num-level">Nivel Actual</label>
+                    <input type="number" id="num-level" value="1" min="1" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="num-target">Nivel Objetivo</label>
+                    <input type="number" id="num-target" value="40" min="2" max="100">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="num-xp">XP Actual del Oficio</label>
+                <input type="number" id="num-xp" value="0" min="0">
+            </div>
+
+            <div class="stat-box">
+                <span>XP Requerida:</span>
+                <span class="stat-value" id="lbl-xp-missing">0</span>
+            </div>
+            <div class="stat-box">
+                <span>Crafteos Necesarios:</span>
+                <span class="stat-value" id="lbl-crafts-needed" style="color: var(--accent-green);">0</span>
+            </div>
+
+            <div class="panel-title" style="margin-top: 20px; font-size: 1rem;" id="editor-title">Añadir Nueva Receta</div>
+            <input type="hidden" id="editing-recipe-id" value="">
+            
+            <div class="form-group">
+                <label>Nombre del Objeto</label>
+                <input type="text" id="new-name" placeholder="Ej: Amuleto del Oso">
+            </div>
+            <div class="form-group">
+                <label>Nivel de Receta</label>
+                <input type="number" id="new-level" value="1" min="1" max="100">
+            </div>
+            <div class="form-group">
+                <label>Ingredientes (Formato: Cantidad Nombre)</label>
+                <textarea id="new-mats" rows="5" placeholder="Ej:&#10;10 Hierro&#10;5 Plata&#10;2 Lana de Jalató"></textarea>
+            </div>
+            
+            <button class="btn" id="btn-save-recipe">Guardar Receta / Cambios</button>
+            <button class="btn btn-danger" id="btn-delete-recipe" style="display: none;">Eliminar Receta Seleccionada</button>
+            <button class="btn" id="btn-cancel-edit" style="display: none; background: #475569; color: #fff;">Cancelar Edición</button>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Recetas Disponibles (Selecciona para Editar / Calcular)</div>
+            <div class="recipes-list" id="panel-recipes-container">
+                </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Lista de Materiales de Mercado</div>
+            <div class="stat-box" style="background: rgba(200, 170, 110, 0.08); border: 1px solid var(--border-gold);">
+                <div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Presupuesto Estimado HDV</div>
+                    <div class="stat-value" id="lbl-estimated-cost" style="font-size: 1.3rem;">0 Kamas</div>
+                </div>
+            </div>
+            <div style="margin-bottom: 8px; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; display: grid; grid-template-columns: 1fr 90px 100px; padding: 0 10px;">
+                <span>Ingrediente</span>
+                <span style="text-align: right;">Cant. Total</span>
+                <span style="text-align: center;">Precio Ut. (k)</span>
+            </div>
+            <ul class="shopping-list" id="panel-shopping-container">
+                </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // EXPERIENCIA OFICIAL DOFUS TOUCH POR NIVELES
+    const xpTable = {
+        1: 0, 2: 50, 3: 140, 4: 271, 5: 441, 6: 653, 7: 905, 8: 1199, 9: 1534, 10: 1911,
+        11: 2330, 12: 2792, 13: 3297, 14: 3846, 15: 4439, 16: 5078, 17: 5762, 18: 6493, 19: 7271, 20: 8097,
+        21: 8973, 22: 9898, 23: 10875, 24: 11903, 25: 12985, 26: 14122, 27: 15315, 28: 16564, 29: 17873, 30: 19242,
+        31: 20672, 32: 22166, 33: 23726, 34: 25353, 35: 27048, 36: 28815, 37: 30656, 38: 32572, 39: 34566, 40: 36641,
+        41: 38800, 42: 41044, 43: 43378, 44: 45804, 45: 48325, 46: 50946, 47: 53669, 48: 56498, 49: 59437, 50: 62491,
+        51: 65664, 52: 68960, 53: 72385, 54: 75943, 55: 79640, 56: 83482, 57: 87475, 58: 91624, 59: 95937, 60: 100421,
+        61: 105082, 62: 109930, 63: 114971, 64: 120215, 65: 125671, 66: 131348, 67: 137256, 68: 143407, 69: 149811, 70: 156481,
+        71: 163429, 72: 170669, 73: 178214, 74: 186080, 75: 194283, 76: 202839, 77: 211765, 78: 221082, 79: 230808, 80: 240964,
+        81: 251574, 82: 262660, 83: 274248, 84: 286364, 85: 299037, 86: 312297, 87: 326175, 88: 340705, 89: 355924, 90: 371870,
+        91: 388582, 92: 406106, 93: 424486, 94: 443772, 95: 464016, 96: 485274, 97: 507604, 98: 531071, 99: 555741, 100: 581687
+    };
+
+    // TABLA REAl DE XP SEGÚN NÚMERO DE SLOTS (INGREDiENTES DIFERENTES) EN DOFUS TOUCH
+    const xpPerSlots = { 1: 10, 2: 15, 3: 37, 4: 75, 5: 150, 6: 375, 7: 750, 8: 1500 };
+
+    // BASE DE DATOS INICIAL CON LOS 12 OFICIOS
+    const defaultRecipes = {
+        joyero: [
+            { id: 'j_1', name: 'Anillo de Agilidad', level: 1, mats: [{q: 1, n: 'Hierro'}, {q: 1, n: 'Baba de Jalató'}] },
+            { id: 'j_2', name: 'Amuleto del Oso', level: 20, mats: [{q: 5, n: 'Cobre'}, {q: 10, n: 'Lana de Jalató'}, {q: 2, n: 'Garras'}] },
+            { id: 'j_3', name: 'Amuleto de Obsidiana (8 Slots)', level: 80, mats: [
+                {q: 20, n: 'Obsidiana'}, {q: 10, n: 'Pirita'}, {q: 5, n: 'Diamante'}, {q: 5, n: 'Zafiro'},
+                {q: 12, n: 'Oro'}, {q: 2, n: 'Hueso de Trool'}, {q: 8, n: 'Ámbar Bambuto'}, {q: 1, n: 'Ojo de Skonk'}
+            ]}
+        ],
+        sastre: [{ id: 's_1', name: 'Capa de Pío Azul', level: 1, mats: [{q: 3, n: 'Pluma de Pío Azul'}] }],
+        zapatero: [{ id: 'z_1', name: 'Botas de Pío', level: 1, mats: [{q: 4, n: 'Cuero de Pío'}] }],
+        campesino: [{ id: 'ca_1', name: 'Harina de Trigo', level: 1, mats: [{q: 2, n: 'Trigo'}] }],
+        cazador: [{ id: 'c_1', name: 'Carne Conservada', level: 1, mats: [{q: 1, n: 'Carne Cruda'}, {q: 1, n: 'Pimienta'}] }],
+        minero: [{ id: 'm_1', name: 'Hierro Fundido', level: 1, mats: [{q: 2, n: 'Hierro Bruto'}] }],
+        lenador: [{ id: 'l_1', name: 'Tabla de Fresno', level: 1, mats: [{q: 2, n: 'Madera de Fresno'}] }],
+        pescador: [{ id: 'pe_1', name: 'Pescado Vaciado', level: 1, mats: [{q: 1, n: 'Pescado Crudo'}] }],
+        alquimista: [{ id: 'a_1', name: 'Pócima de Recuerdo', level: 20, mats: [{q: 4, n: 'Salvia'}, {q: 1, n: 'Agua'}] }],
+        panadero: [{ id: 'pa_1', name: 'Pan de Amakna', level: 1, mats: [{q: 1, n: 'Harina'}, {q: 1, n: 'Agua'}] }],
+        carnicero: [{ id: 'car_1', name: 'Filete de Jalató', level: 1, mats: [{q: 1, n: 'Carne cruda'}, {q: 1, n: 'Aceite'}] }],
+        pescadero: [{ id: 'pes_1', name: 'Pescado Frito', level: 1, mats: [{q: 1, n: 'Pescado crudo'}, {q: 1, n: 'Harina'}] }]
+    };
+
+    // Estados de memoria reactiva
+    let recipesData = JSON.parse(localStorage.getItem('dofus_touch_v4_recipes')) || defaultRecipes;
+    let resourcePrices = JSON.parse(localStorage.getItem('dofus_touch_v4_prices')) || {};
+    let selectedRecipeId = null;
+    let isBonusXpActive = false;
+
+    // Componentes del DOM
+    const selectProf = document.getElementById('prof-select');
+    const inputLevel = document.getElementById('num-level');
+    const inputXp = document.getElementById('num-xp');
+    const inputTarget = document.getElementById('num-target');
+    const lblXpMissing = document.getElementById('lbl-xp-missing');
+    const lblCraftsNeeded = document.getElementById('lbl-crafts-needed');
+    const lblEstimatedCost = document.getElementById('lbl-estimated-cost');
+    const containerRecipes = document.getElementById('panel-recipes-container');
+    const containerShopping = document.getElementById('panel-shopping-container');
+    
+    // Inputs del Editor
+    const editorTitle = document.getElementById('editor-title');
+    const editingId = document.getElementById('editing-recipe-id');
+    const newName = document.getElementById('new-name');
+    const newLevel = document.getElementById('new-level');
+    const newMats = document.getElementById('new-mats');
+    const btnDelete = document.getElementById('btn-delete-recipe');
+    const btnCancel = document.getElementById('btn-cancel-edit');
+
+    // Inicializador del Toggle del Bonus de XP (+50%)
+    document.getElementById('btn-bonus-xp').addEventListener('click', (e) => {
+        isBonusXpActive = !isBonusXpActive;
+        e.target.classList.toggle('active', isBonusXpActive);
+        updateCalculator();
+    });
+
+    // Control Sincronizado Nivel/XP
+    inputLevel.addEventListener('input', () => {
+        let lvl = Math.min(100, Math.max(1, parseInt(inputLevel.value) || 1));
+        inputLevel.value = lvl; inputXp.value = xpTable[lvl]; updateCalculator();
+    });
+    inputXp.addEventListener('input', () => {
+        let xp = Math.max(0, parseInt(inputXp.value) || 0);
+        let calculatedLvl = 1;
+        for (let l = 1; l <= 100; l++) { if (xp >= xpTable[l]) calculatedLvl = l; else break; }
+        inputLevel.value = calculatedLvl; updateCalculator();
+    });
+    selectProf.addEventListener('change', () => { selectedRecipeId = null; resetEditor(); updateCalculator(); });
+    inputTarget.addEventListener('input', updateCalculator);
+
+    // Guardar / Modificar Recetas Existentes y Nuevas
+    document.getElementById('btn-save-recipe').addEventListener('click', () => {
+        const name = newName.value.trim();
+        const lvl = parseInt(newLevel.value) || 1;
+        const rawMats = newMats.value.trim().split('\n');
+        const activeProf = selectProf.value;
+        const idToSave = editingId.value;
+
+        if(!name || rawMats.length === 0 || rawMats[0] === "") { alert("Completa los datos mínimos de la receta."); return; }
+
+        let parsedMats = [];
+        rawMats.forEach(line => {
+            let spaceIdx = line.trim().indexOf(' ');
+            if(spaceIdx !== -1) {
+                let qty = parseInt(line.trim().substring(0, spaceIdx)) || 1;
+                let matName = line.trim().substring(spaceIdx + 1).trim();
+                if(matName) parsedMats.push({ q: qty, n: matName });
+            }
+        });
+
+        if(parsedMats.length === 0 || parsedMats.length > 8) {
+            alert("El formato debe ser 'Cantidad Nombre' (Ej: 10 Hierro) y máximo 8 slots.");
+            return;
+        }
+
+        if (!recipesData[activeProf]) recipesData[activeProf] = [];
+
+        if(idToSave) {
+            // Modo Edición: Modificar receta existente en la base de datos
+            let idx = recipesData[activeProf].findIndex(r => r.id === idToSave);
+            if(idx !== -1) {
+                recipesData[activeProf][idx].name = name;
+                recipesData[activeProf][idx].level = lvl;
+                recipesData[activeProf][idx].mats = parsedMats;
+            }
+        } else {
+            // Modo Nuevo: Insertar nuevo crafteo
+            recipesData[activeProf].push({
+                id: 'recipe_' + Date.now(),
+                name: name,
+                level: lvl,
+                mats: parsedMats
+            });
+        }
+
+        localStorage.setItem('dofus_touch_v4_recipes', JSON.stringify(recipesData));
+        resetEditor();
+        updateCalculator();
+    });
+
+    // Eliminar Receta Seleccionada de la base de datos
+    btnDelete.addEventListener('click', () => {
+        const activeProf = selectProf.value;
+        const idToDelete = editingId.value;
+        if(idToDelete && confirm("¿Seguro que deseas eliminar esta receta por completo de tu lista?")) {
+            recipesData[activeProf] = recipesData[activeProf].filter(r => r.id !== idToDelete);
+            localStorage.setItem('dofus_touch_v4_recipes', JSON.stringify(recipesData));
+            selectedRecipeId = null;
+            resetEditor();
+            updateCalculator();
+        }
+    });
+
+    btnCancel.addEventListener('click', resetEditor);
+
+    function loadRecipeIntoEditor(recipe) {
+        editorTitle.innerText = "Modificar / Editar Receta";
+        editingId.value = recipe.id;
+        newName.value = recipe.name;
+        newLevel.value = recipe.level;
+        newMats.value = recipe.mats.map(m => `${m.q} ${m.n}`).join('\n');
+        btnDelete.style.display = 'block';
+        btnCancel.style.display = 'block';
+    }
+
+    function resetEditor() {
+        editorTitle.innerText = "Añadir Nueva Receta";
+        editingId.value = "";
+        newName.value = "";
+        newLevel.value = "1";
+        newMats.value = "";
+        btnDelete.style.display = 'none';
+        btnCancel.style.display = 'none';
+    }
+
+    // Motor Central de Cómputo
+    function updateCalculator() {
+        const activeProf = selectProf.value;
+        const currentLvl = parseInt(inputLevel.value) || 1;
+        const currentXp = parseInt(inputXp.value) || 0;
+        const targetLvl = parseInt(inputTarget.value) || 40;
+
+        const targetXp = xpTable[targetLvl] || 0;
+        const xpMissing = Math.max(0, targetXp - currentXp);
+        lblXpMissing.innerText = xpMissing.toLocaleString();
+
+        const currentRecipes = recipesData[activeProf] || [];
+        containerRecipes.innerHTML = '';
+
+        currentRecipes.forEach(recipe => {
+            const isObsolete = (currentLvl - recipe.level) > 40;
+            const isTooHigh = currentLvl < recipe.level;
+            const isDisabled = isObsolete || isTooHigh;
+
+            // FÓRMULA OFICIAL DE XP: Según número de ingredientes (slots)
+            let numSlots = Math.min(8, Math.max(1, recipe.mats.length));
+            let baseXp = xpPerSlots[numSlots] || 10;
+            if(isBonusXpActive) baseXp = Math.floor(baseXp * 1.5); // Aplicación matemática del +50%
+
+            const card = document.createElement('div');
+            card.className = `recipe-card ${isDisabled ? 'disabled' : ''} ${selectedRecipeId === recipe.id ? 'selected' : ''}`;
+
+            let gridHTML = '<div class="materials-grid">';
+            recipe.mats.forEach(m => { gridHTML += `<div class="mat-slot" title="${m.n}"><span class="mat-qty">${m.q}x</span>${m.n}</div>`; });
+            gridHTML += '</div>';
+
+            let statusBadge = `<span class="badge xp">+${baseXp} XP</span>`;
+            if (isObsolete) statusBadge = `<span class="badge error">Obsoleta</span>`;
+            if (isTooHigh) statusBadge = `<span class="badge error">Req Lvl ${recipe.level}</span>`;
+
+            card.innerHTML = `
+                <div class="recipe-header">
+                    <div class="recipe-meta">
+                        <h4>${recipe.name}</h4>
+                        <span>Nivel ${recipe.level} | Slots: ${numSlots}</span>
+                    </div>
+                    ${statusBadge}
+                </div>
+                ${gridHTML}
+            `;
+
+            // Hacer clic carga los datos en el editor y recalcula la lista de compras
+            card.addEventListener('click', () => {
+                selectedRecipeId = recipe.id;
+                loadRecipeIntoEditor(recipe);
+                // Forzar el re-renderizado de la selección
+                document.querySelectorAll('.recipe-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                renderShoppingList(recipe, xpMissing, baseXp);
+            });
+
+            containerRecipes.appendChild(card);
+        });
+
+        // Si hay una receta seleccionada activa, refrescar su cálculo de compras
+        const activeSelected = currentRecipes.find(r => r.id === selectedRecipeId);
+        if(activeSelected) {
+            let slots = Math.min(8, Math.max(1, activeSelected.mats.length));
+            let calculatedXp = xpPerSlots[slots] || 10;
+            if(isBonusXpActive) calculatedXp = Math.floor(calculatedXp * 1.5);
+            renderShoppingList(activeSelected, xpMissing, calculatedXp);
+        } else {
+            lblCraftsNeeded.innerText = '0';
+            lblEstimatedCost.innerText = '0 Kamas';
+            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">Haz clic en una receta para editar componentes o calcular compras.</li>';
+        }
+    }
+
+    // Renderizar la lista de compras dinámicamente con inputs de precio
+    function renderShoppingList(recipe, xpMissing, currentXpGained) {
+        if(xpMissing === 0) {
+            lblCraftsNeeded.innerText = '0';
+            lblEstimatedCost.innerText = '0 Kamas';
+            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">¡Ya has alcanzado el nivel objetivo!</li>';
+            return;
+        }
+
+        const craftsNeeded = Math.ceil(xpMissing / currentXpGained);
+        lblCraftsNeeded.innerText = craftsNeeded.toLocaleString();
+
+        containerShopping.innerHTML = '';
+        recipe.mats.forEach(m => {
+            const totalQty = m.q * craftsNeeded;
+            const savedPrice = resourcePrices[m.n] || 0;
+
+            const li = document.createElement('li');
+            li.className = 'shopping-item';
+            li.innerHTML = `
+                <span class="mat-name" title="${m.n}">${m.n}</span>
+                <span class="mat-total-qty">${totalQty.toLocaleString()}</span>
+                <div><input type="number" class="hdv-price-input" data-name="${m.n}" value="${savedPrice}" min="0"></div>
+            `;
+            containerShopping.appendChild(li);
+        });
+
+        document.querySelectorAll('.hdv-price-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const resourceName = e.target.getAttribute('data-name');
+                const priceValue = Math.max(0, parseInt(e.target.value) || 0);
+                resourcePrices[resourceName] = priceValue;
+                localStorage.setItem('dofus_touch_v4_prices', JSON.stringify(resourcePrices));
+                calculateTotalSum(craftsNeeded, recipe.mats);
+            });
+        });
+
+        calculateTotalSum(craftsNeeded, recipe.mats);
+    }
+
+    function calculateTotalSum(craftsNeeded, mats) {
+        let grandTotal = 0;
+        mats.forEach(m => {
+            const totalQty = m.q * craftsNeeded;
+            const priceUnit = resourcePrices[m.n] || 0;
+            grandTotal += totalQty * priceUnit;
+        });
+        lblEstimatedCost.innerText = grandTotal.toLocaleString() + ' Kamas';
+    }
+
+    // Inicializar app
+    updateCalculator();
+</script>
+
+</body>
+</html>
