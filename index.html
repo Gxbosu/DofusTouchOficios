@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Oficios</title>
+    <title>Calculadora Maestra de Oficios - Lógica por Slots</title>
     <style>
         :root {
             --bg-dark: #0b0e11;
@@ -42,11 +42,9 @@
         .btn-danger { background-color: var(--accent-red); color: #fff; }
         .btn-danger:hover { background-color: #ff6b6b; }
         
-        /* Botón de Bonus de Experiencia */
         .bonus-toggle { background-color: #1e293b; color: var(--text-muted); border: 1px solid var(--border-dark); transition: all 0.3s ease; }
         .bonus-toggle.active { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: var(--accent-blue); text-shadow: 0 0 8px rgba(59, 130, 246, 0.6); }
 
-        /* Lista de recetas */
         .recipes-list { display: flex; flex-direction: column; gap: 12px; max-height: 750px; overflow-y: auto; padding-right: 5px; }
         .recipe-card { background-color: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; padding: 14px; cursor: pointer; transition: all 0.2s; position: relative; }
         .recipe-card:hover:not(.disabled) { border-color: var(--border-gold); }
@@ -65,7 +63,6 @@
         .badge.xp { background-color: rgba(200, 170, 110, 0.15); color: var(--text-gold); }
         .badge.error { background-color: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
 
-        /* Lista de Compras */
         .shopping-item { background-color: var(--bg-input); padding: 10px; border-radius: 6px; margin-bottom: 6px; display: grid; grid-template-columns: 1fr 90px 100px; align-items: center; gap: 10px; border-left: 4px solid var(--border-gold); }
         .shopping-item .mat-name { font-weight: 500; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .shopping-item .mat-total-qty { color: var(--text-gold); font-weight: bold; text-align: right; font-size: 0.95rem; }
@@ -80,34 +77,26 @@
 
 <div class="container">
     <header>
-        <h1>Calculadora de Oficios</h1>
+        <h1>Calculadora de Oficios Real — Dofus Touch</h1>
     </header>
 
     <div class="main-grid">
         <div class="panel">
             <div class="panel-title">Progreso & Multiplicadores</div>
-            
-            <button class="btn bonus-toggle" id="btn-bonus-xp">⚡ BONUS XP (+50% Activo)</button>
+            <button class="btn bonus-toggle" id="btn-bonus-xp">⚡ BONUS XP (+50%)</button>
 
             <div class="form-group" style="margin-top: 10px;">
                 <label for="prof-select">Oficio Activo</label>
                 <select id="prof-select">
-                    <optgroup label="Recolección">
-                        <option value="cazador">Cazador 🍖</option>
-                        <option value="campesino">Campesino 🌾</option>
-                        <option value="minero">Minero ⛏️</option>
-                        <option value="lenador">Leñador 🪓</option>
-                        <option value="pescador">Pescador 🎣</option>
-                        <option value="alquimista">Alquimista 🧪</option>
-                    </optgroup>
-                    <optgroup label="Crafteos">
-                        <option value="joyero" selected>Joyero 💎</option>
-                        <option value="sastre">Sastre 👕</option>
-                        <option value="zapatero">Zapatero 👞</option>
-                        <option value="panadero">Panadero 🥖</option>
-                        <option value="carnicero">Carnicero 🔪</option>
-                        <option value="pescadero">Pescadero 🐟</option>
-                    </optgroup>
+                    <option value="cazador" selected>Cazador 🍖</option>
+                    <option value="joyero">Joyero 💎</option>
+                    <option value="sastre">Sastre 👕</option>
+                    <option value="zapatero">Zapatero 👞</option>
+                    <option value="campesino">Campesino 🌾</option>
+                    <option value="minero">Minero ⛏️</option>
+                    <option value="lenador">Leñador 🪓</option>
+                    <option value="pescador">Pescador 🎣</option>
+                    <option value="alquimista">Alquimista 🧪</option>
                 </select>
             </div>
 
@@ -135,20 +124,16 @@
                 <span class="stat-value" id="lbl-crafts-needed" style="color: var(--accent-green);">0</span>
             </div>
 
-            <div class="panel-title" style="margin-top: 20px; font-size: 1rem;" id="editor-title">Añadir Nueva Receta</div>
+            <div class="panel-title" style="margin-top: 20px; font-size: 1rem;" id="editor-title">Añadir / Editar Receta</div>
             <input type="hidden" id="editing-recipe-id" value="">
             
             <div class="form-group">
-                <label>Nombre del Objeto</label>
-                <input type="text" id="new-name" placeholder="Ej: Amuleto del Oso">
-            </div>
-            <div class="form-group">
-                <label>Slots de Receta</label>
-                <input type="number" id="new-level" value="1" min="1" max="8">
+                <label>Nombre de la Receta / Objeto</label>
+                <input type="text" id="new-name" placeholder="Ej: Carne de pájaro en conserva">
             </div>
             <div class="form-group">
                 <label>Ingredientes (Formato: Cantidad Nombre)</label>
-                <textarea id="new-mats" rows="5" placeholder="Ej:&#10;10 Hierro&#10;5 Plata&#10;2 Lana de Jalató"></textarea>
+                <textarea id="new-mats" rows="6" placeholder="Ej:&#10;1 Carne de pájaro cruda&#10;1 Especias"></textarea>
             </div>
             
             <button class="btn" id="btn-save-recipe">Guardar Receta / Cambios</button>
@@ -157,13 +142,12 @@
         </div>
 
         <div class="panel">
-            <div class="panel-title">Recetas Disponibles (Selecciona para Editar / Calcular)</div>
-            <div class="recipes-list" id="panel-recipes-container">
-                </div>
+            <div class="panel-title">Recetas Disponibles (Cálculo según cantidad de Slots)</div>
+            <div class="recipes-list" id="panel-recipes-container"></div>
         </div>
 
         <div class="panel">
-            <div class="panel-title">Lista de Materiales de Mercado</div>
+            <div class="panel-title">Lista de Materiales del Mercado</div>
             <div class="stat-box" style="background: rgba(200, 170, 110, 0.08); border: 1px solid var(--border-gold);">
                 <div>
                     <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Presupuesto Estimado HDV</div>
@@ -175,14 +159,13 @@
                 <span style="text-align: right;">Cant. Total</span>
                 <span style="text-align: center;">Precio Ut. (k)</span>
             </div>
-            <ul class="shopping-list" id="panel-shopping-container">
-                </ul>
+            <ul class="shopping-list" id="panel-shopping-container"></ul>
         </div>
     </div>
 </div>
 
 <script>
-    // EXPERIENCIA OFICIAL DOFUS TOUCH POR NIVELES
+    // TABLA DE EXP (Niveles 1-100)
     const xpTable = {
         1: 0, 2: 50, 3: 140, 4: 271, 5: 441, 6: 653, 7: 905, 8: 1199, 9: 1534, 10: 1911,
         11: 2330, 12: 2792, 13: 3297, 14: 3846, 15: 4439, 16: 5078, 17: 5762, 18: 6493, 19: 7271, 20: 8097,
@@ -196,39 +179,52 @@
         91: 388582, 92: 406106, 93: 424486, 94: 443772, 95: 464016, 96: 485274, 97: 507604, 98: 531071, 99: 555741, 100: 581687
     };
 
-    // TABLA REAl DE XP SEGÚN NÚMERO DE SLOTS (INGREDiENTES DIFERENTES) EN DOFUS TOUCH
-    const xpPerSlots = { 1: 10, 2: 15, 3: 37, 4: 75, 5: 150, 6: 375, 7: 750, 8: 1500 };
+    // XP POR NÚMERO DE SLOTS
+    const xpPerSlots = { 1: 10, 2: 20, 3: 40, 4: 85, 5: 170, 6: 290, 7: 440, 8: 650 };
 
-    // BASE DE DATOS INICIAL CON LOS 12 OFICIOS
-    const defaultRecipes = {
-        joyero: [
-            { id: 'j_1', name: 'Anillo de Agilidad', level: 1, mats: [{q: 1, n: 'Hierro'}, {q: 1, n: 'Baba de Jalató'}] },
-            { id: 'j_2', name: 'Amuleto del Oso', level: 20, mats: [{q: 5, n: 'Cobre'}, {q: 10, n: 'Lana de Jalató'}, {q: 2, n: 'Garras'}] },
-            { id: 'j_3', name: 'Amuleto de Obsidiana (8 Slots)', level: 80, mats: [
-                {q: 20, n: 'Obsidiana'}, {q: 10, n: 'Pirita'}, {q: 5, n: 'Diamante'}, {q: 5, n: 'Zafiro'},
-                {q: 12, n: 'Oro'}, {q: 2, n: 'Hueso de Trool'}, {q: 8, n: 'Ámbar Bambuto'}, {q: 1, n: 'Ojo de Skonk'}
-            ]}
-        ],
-        sastre: [{ id: 's_1', name: 'Capa de Pío Azul', level: 1, mats: [{q: 3, n: 'Pluma de Pío Azul'}] }],
-        zapatero: [{ id: 'z_1', name: 'Botas de Pío', level: 1, mats: [{q: 4, n: 'Cuero de Pío'}] }],
-        campesino: [{ id: 'ca_1', name: 'Harina de Trigo', level: 1, mats: [{q: 2, n: 'Trigo'}] }],
-        cazador: [{ id: 'c_1', name: 'Carne Conservada', level: 1, mats: [{q: 1, n: 'Carne Cruda'}, {q: 1, n: 'Pimienta'}] }],
-        minero: [{ id: 'm_1', name: 'Hierro Fundido', level: 1, mats: [{q: 2, n: 'Hierro Bruto'}] }],
-        lenador: [{ id: 'l_1', name: 'Tabla de Fresno', level: 1, mats: [{q: 2, n: 'Madera de Fresno'}] }],
-        pescador: [{ id: 'pe_1', name: 'Pescado Vaciado', level: 1, mats: [{q: 1, n: 'Pescado Crudo'}] }],
-        alquimista: [{ id: 'a_1', name: 'Pócima de Recuerdo', level: 20, mats: [{q: 4, n: 'Salvia'}, {q: 1, n: 'Agua'}] }],
-        panadero: [{ id: 'pa_1', name: 'Pan de Amakna', level: 1, mats: [{q: 1, n: 'Harina'}, {q: 1, n: 'Agua'}] }],
-        carnicero: [{ id: 'car_1', name: 'Filete de Jalató', level: 1, mats: [{q: 1, n: 'Carne cruda'}, {q: 1, n: 'Aceite'}] }],
-        pescadero: [{ id: 'pes_1', name: 'Pescado Frito', level: 1, mats: [{q: 1, n: 'Pescado crudo'}, {q: 1, n: 'Harina'}] }]
+    // LÓGICA DE NIVELES MÁXIMOS PERMITIDOS SEGÚN SLOTS (REGLA DOFUS TOUCH)
+    const maxLevelPerSlot = {
+        1: 40,  // 1 Slot da exp hasta lvl 40
+        2: 60,  // 2 Slots da exp hasta lvl 60
+        3: 80,  // 3 Slots da exp hasta lvl 80
+        4: 100, // 4 Slots da exp hasta lvl 100
+        5: 100,
+        6: 100,
+        7: 100,
+        8: 100
     };
 
-    // Estados de memoria reactiva
-    let recipesData = JSON.parse(localStorage.getItem('dofus_touch_v4_recipes')) || defaultRecipes;
-    let resourcePrices = JSON.parse(localStorage.getItem('dofus_touch_v4_prices')) || {};
+    const defaultRecipes = {
+        cazador: [
+            { id: 'c_1', name: 'Especias', mats: [{q: 1, n: 'Cereza'}, {q: 1, n: 'Medida de pimienta'}] },
+            { id: 'c_2', name: 'Carne de pájaro en conserva', mats: [{q: 1, n: 'Carne de pájaro cruda'}, {q: 1, n: 'Especias'}] },
+            { id: 'c_3', name: 'Carne de larva en conserva', mats: [{q: 1, n: 'Carne de larva cruda'}, {q: 1, n: 'Especias'}] }
+        ],
+        joyero: [
+            { id: 'j_1', name: 'Anillo de Agilidad', mats: [{q: 1, n: 'Hierro'}, {q: 1, n: 'Baba de Jalató'}] }
+        ]
+    };
+
+    let recipesData;
+    try {
+        const savedRecipes = localStorage.getItem('dofus_touch_v6_recipes');
+        recipesData = savedRecipes ? JSON.parse(savedRecipes) : defaultRecipes;
+        if (!recipesData || !recipesData.cazador) { recipesData = defaultRecipes; }
+    } catch(e) {
+        recipesData = defaultRecipes;
+    }
+
+    let resourcePrices = {};
+    try {
+        const savedPrices = localStorage.getItem('dofus_touch_v6_prices');
+        if (savedPrices) resourcePrices = JSON.parse(savedPrices);
+    } catch(e) {
+        resourcePrices = {};
+    }
+
     let selectedRecipeId = null;
     let isBonusXpActive = false;
 
-    // Componentes del DOM
     const selectProf = document.getElementById('prof-select');
     const inputLevel = document.getElementById('num-level');
     const inputXp = document.getElementById('num-xp');
@@ -239,26 +235,22 @@
     const containerRecipes = document.getElementById('panel-recipes-container');
     const containerShopping = document.getElementById('panel-shopping-container');
     
-    // Inputs del Editor
     const editorTitle = document.getElementById('editor-title');
     const editingId = document.getElementById('editing-recipe-id');
     const newName = document.getElementById('new-name');
-    const newLevel = document.getElementById('new-level');
     const newMats = document.getElementById('new-mats');
     const btnDelete = document.getElementById('btn-delete-recipe');
     const btnCancel = document.getElementById('btn-cancel-edit');
 
-    // Inicializador del Toggle del Bonus de XP (+50%)
     document.getElementById('btn-bonus-xp').addEventListener('click', (e) => {
         isBonusXpActive = !isBonusXpActive;
         e.target.classList.toggle('active', isBonusXpActive);
         updateCalculator();
     });
 
-    // Control Sincronizado Nivel/XP
     inputLevel.addEventListener('input', () => {
         let lvl = Math.min(100, Math.max(1, parseInt(inputLevel.value) || 1));
-        inputLevel.value = lvl; inputXp.value = xpTable[lvl]; updateCalculator();
+        inputLevel.value = lvl; inputXp.value = xpTable[lvl] || 0; updateCalculator();
     });
     inputXp.addEventListener('input', () => {
         let xp = Math.max(0, parseInt(inputXp.value) || 0);
@@ -269,15 +261,13 @@
     selectProf.addEventListener('change', () => { selectedRecipeId = null; resetEditor(); updateCalculator(); });
     inputTarget.addEventListener('input', updateCalculator);
 
-    // Guardar / Modificar Recetas Existentes y Nuevas
     document.getElementById('btn-save-recipe').addEventListener('click', () => {
         const name = newName.value.trim();
-        const lvl = parseInt(newLevel.value) || 1;
         const rawMats = newMats.value.trim().split('\n');
         const activeProf = selectProf.value;
         const idToSave = editingId.value;
 
-        if(!name || rawMats.length === 0 || rawMats[0] === "") { alert("Completa los datos mínimos de la receta."); return; }
+        if(!name || rawMats.length === 0 || rawMats[0] === "") { alert("Completa los campos."); return; }
 
         let parsedMats = [];
         rawMats.forEach(line => {
@@ -289,43 +279,29 @@
             }
         });
 
-        if(parsedMats.length === 0 || parsedMats.length > 8) {
-            alert("El formato debe ser 'Cantidad Nombre' (Ej: 10 Hierro) y máximo 8 slots.");
-            return;
-        }
-
         if (!recipesData[activeProf]) recipesData[activeProf] = [];
 
         if(idToSave) {
-            // Modo Edición: Modificar receta existente en la base de datos
             let idx = recipesData[activeProf].findIndex(r => r.id === idToSave);
             if(idx !== -1) {
                 recipesData[activeProf][idx].name = name;
-                recipesData[activeProf][idx].level = lvl;
                 recipesData[activeProf][idx].mats = parsedMats;
             }
         } else {
-            // Modo Nuevo: Insertar nuevo crafteo
-            recipesData[activeProf].push({
-                id: 'recipe_' + Date.now(),
-                name: name,
-                level: lvl,
-                mats: parsedMats
-            });
+            recipesData[activeProf].push({ id: 'recipe_' + Date.now(), name: name, mats: parsedMats });
         }
 
-        localStorage.setItem('dofus_touch_v4_recipes', JSON.stringify(recipesData));
+        localStorage.setItem('dofus_touch_v6_recipes', JSON.stringify(recipesData));
         resetEditor();
         updateCalculator();
     });
 
-    // Eliminar Receta Seleccionada de la base de datos
     btnDelete.addEventListener('click', () => {
         const activeProf = selectProf.value;
         const idToDelete = editingId.value;
-        if(idToDelete && confirm("¿Seguro que deseas eliminar esta receta por completo de tu lista?")) {
+        if(idToDelete && confirm("¿Eliminar receta?")) {
             recipesData[activeProf] = recipesData[activeProf].filter(r => r.id !== idToDelete);
-            localStorage.setItem('dofus_touch_v4_recipes', JSON.stringify(recipesData));
+            localStorage.setItem('dofus_touch_v6_recipes', JSON.stringify(recipesData));
             selectedRecipeId = null;
             resetEditor();
             updateCalculator();
@@ -338,7 +314,6 @@
         editorTitle.innerText = "Modificar / Editar Receta";
         editingId.value = recipe.id;
         newName.value = recipe.name;
-        newLevel.value = recipe.level;
         newMats.value = recipe.mats.map(m => `${m.q} ${m.n}`).join('\n');
         btnDelete.style.display = 'block';
         btnCancel.style.display = 'block';
@@ -348,18 +323,19 @@
         editorTitle.innerText = "Añadir Nueva Receta";
         editingId.value = "";
         newName.value = "";
-        newLevel.value = "1";
         newMats.value = "";
         btnDelete.style.display = 'none';
         btnCancel.style.display = 'none';
     }
 
-    // Motor Central de Cómputo
     function updateCalculator() {
         const activeProf = selectProf.value;
-        const currentLvl = parseInt(inputLevel.value) || 1;
         const currentXp = parseInt(inputXp.value) || 0;
         const targetLvl = parseInt(inputTarget.value) || 40;
+
+        let calculatedLvl = 1;
+        for (let l = 1; l <= 100; l++) { if (currentXp >= xpTable[l]) calculatedLvl = l; else break; }
+        inputLevel.value = calculatedLvl;
 
         const targetXp = xpTable[targetLvl] || 0;
         const xpMissing = Math.max(0, targetXp - currentXp);
@@ -369,14 +345,15 @@
         containerRecipes.innerHTML = '';
 
         currentRecipes.forEach(recipe => {
-            const isObsolete = (currentLvl - recipe.level) > 60;
-            const isTooHigh = currentLvl < recipe.level;
-            const isDisabled = isObsolete || isTooHigh;
-
-            // FÓRMULA OFICIAL DE XP: Según número de ingredientes (slots)
             let numSlots = Math.min(8, Math.max(1, recipe.mats.length));
+            
+            // LÓGICA DE OBSOLESCENCIA POR SLOTS
+            const maxLvlAllowed = maxLevelPerSlot[numSlots] || 100;
+            const isObsolete = calculatedLvl >= maxLvlAllowed;
+            const isDisabled = isObsolete;
+
             let baseXp = xpPerSlots[numSlots] || 10;
-            if(isBonusXpActive) baseXp = Math.floor(baseXp * 1.5); // Aplicación matemática del +50%
+            if(isBonusXpActive) baseXp = Math.floor(baseXp * 1.5);
 
             const card = document.createElement('div');
             card.className = `recipe-card ${isDisabled ? 'disabled' : ''} ${selectedRecipeId === recipe.id ? 'selected' : ''}`;
@@ -386,53 +363,59 @@
             gridHTML += '</div>';
 
             let statusBadge = `<span class="badge xp">+${baseXp} XP</span>`;
-            if (isObsolete) statusBadge = `<span class="badge error">Obsoleta</span>`;
-            if (isTooHigh) statusBadge = `<span class="badge error">Req Lvl ${recipe.level}</span>`;
+            if (isObsolete) statusBadge = `<span class="badge error">Límite Lvl ${maxLvlAllowed}</span>`;
 
             card.innerHTML = `
                 <div class="recipe-header">
                     <div class="recipe-meta">
                         <h4>${recipe.name}</h4>
-                        <span>Nivel ${recipe.level} | Slots: ${numSlots}</span>
+                        <span>Slots: ${numSlots} | Útil hasta lvl ${maxLvlAllowed}</span>
                     </div>
                     ${statusBadge}
                 </div>
                 ${gridHTML}
             `;
 
-            // Hacer clic carga los datos en el editor y recalcula la lista de compras
             card.addEventListener('click', () => {
                 selectedRecipeId = recipe.id;
                 loadRecipeIntoEditor(recipe);
-                // Forzar el re-renderizado de la selección
                 document.querySelectorAll('.recipe-card').forEach(c => c.classList.remove('selected'));
                 card.classList.add('selected');
-                renderShoppingList(recipe, xpMissing, baseXp);
+                renderShoppingList(recipe, xpMissing, baseXp, isObsolete);
             });
 
             containerRecipes.appendChild(card);
         });
 
-        // Si hay una receta seleccionada activa, refrescar su cálculo de compras
         const activeSelected = currentRecipes.find(r => r.id === selectedRecipeId);
         if(activeSelected) {
             let slots = Math.min(8, Math.max(1, activeSelected.mats.length));
             let calculatedXp = xpPerSlots[slots] || 10;
             if(isBonusXpActive) calculatedXp = Math.floor(calculatedXp * 1.5);
-            renderShoppingList(activeSelected, xpMissing, calculatedXp);
+            
+            const maxLvlAllowed = maxLevelPerSlot[slots] || 100;
+            const isObsolete = calculatedLvl >= maxLvlAllowed;
+
+            renderShoppingList(activeSelected, xpMissing, calculatedXp, isObsolete);
         } else {
             lblCraftsNeeded.innerText = '0';
             lblEstimatedCost.innerText = '0 Kamas';
-            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">Haz clic en una receta para editar componentes o calcular compras.</li>';
+            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">Haz clic en una receta para calcular.</li>';
         }
     }
 
-    // Renderizar la lista de compras dinámicamente con inputs de precio
-    function renderShoppingList(recipe, xpMissing, currentXpGained) {
+    function renderShoppingList(recipe, xpMissing, currentXpGained, isObsolete) {
+        if(isObsolete) {
+            lblCraftsNeeded.innerText = '0';
+            lblEstimatedCost.innerText = '0 Kamas';
+            containerShopping.innerHTML = '<li style="color: var(--accent-red); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">Esta receta ya no te da experiencia a tu nivel actual.</li>';
+            return;
+        }
+
         if(xpMissing === 0) {
             lblCraftsNeeded.innerText = '0';
             lblEstimatedCost.innerText = '0 Kamas';
-            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">¡Ya has alcanzado el nivel objetivo!</li>';
+            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">¡Nivel objetivo alcanzado!</li>';
             return;
         }
 
@@ -459,7 +442,7 @@
                 const resourceName = e.target.getAttribute('data-name');
                 const priceValue = Math.max(0, parseInt(e.target.value) || 0);
                 resourcePrices[resourceName] = priceValue;
-                localStorage.setItem('dofus_touch_v4_prices', JSON.stringify(resourcePrices));
+                localStorage.setItem('dofus_touch_v6_prices', JSON.stringify(resourcePrices));
                 calculateTotalSum(craftsNeeded, recipe.mats);
             });
         });
@@ -477,7 +460,6 @@
         lblEstimatedCost.innerText = grandTotal.toLocaleString() + ' Kamas';
     }
 
-    // Inicializar app
     updateCalculator();
 </script>
 
