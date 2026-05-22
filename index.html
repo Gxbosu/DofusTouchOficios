@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Recetas — Dofus Touch</title>
+    <title>Calculadora Exacta</title>
     <style>
         :root {
             --bg-dark: #0b0e11;
@@ -26,47 +26,65 @@
         header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--border-gold); padding-bottom: 15px; }
         header h1 { color: var(--text-gold); font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; }
 
-        .main-grid { display: grid; grid-template-columns: 400px 1fr 450px; gap: 25px; }
-        @media (max-width: 1400px) { .main-grid { grid-template-columns: 1fr; } }
+        .main-grid { display: grid; grid-template-columns: 420px 1fr; gap: 25px; }
+        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
 
         .panel { background-color: var(--bg-panel); border: 1px solid var(--border-dark); border-radius: 10px; padding: 22px; height: fit-content; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .panel-title { color: var(--text-gold); font-size: 1.1rem; margin-bottom: 18px; border-bottom: 1px solid var(--border-dark); padding-bottom: 8px; text-transform: uppercase; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .panel-title { color: var(--text-gold); font-size: 1.1rem; margin-bottom: 18px; border-bottom: 1px solid var(--border-dark); padding-bottom: 8px; text-transform: uppercase; font-weight: bold; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
         
         .form-group { margin-bottom: 14px; }
         label { display: block; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         select, input, textarea { width: 100%; background-color: var(--bg-input); border: 1px solid var(--border-dark); color: var(--text-light); padding: 10px; border-radius: 6px; font-size: 0.9rem; }
         select:focus, input:focus, textarea:focus { outline: none; border-color: var(--border-gold); }
 
-        .btn { background-color: var(--border-gold); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%; transition: background 0.2s; margin-bottom: 8px; font-size: 0.85rem; }
+        optgroup { background-color: var(--bg-panel); color: var(--text-gold); font-weight: bold; font-style: normal; }
+        option { background-color: var(--bg-input); color: var(--text-light); }
+
+        .checkbox-group { display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border: 1px solid var(--border-dark); margin-bottom: 15px; }
+        .checkbox-label { display: flex; align-items: center; gap: 10px; color: var(--text-light); font-size: 0.85rem; cursor: pointer; text-transform: none; letter-spacing: 0; }
+        .checkbox-label input[type="checkbox"] { width: auto; cursor: pointer; accent-color: var(--border-gold); transform: scale(1.1); }
+
+        .btn { background-color: var(--border-gold); color: #000; border: none; padding: 10px; border-radius: 6px; font-weight: bold; text-transform: uppercase; cursor: pointer; width: 100%; transition: background 0.2s; margin-bottom: 8px; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .btn:hover { background-color: #f3cf8a; }
         .btn-danger { background-color: var(--accent-red); color: #fff; }
         .btn-danger:hover { background-color: #ff6b6b; }
+        .btn-sm { padding: 5px 10px; font-size: 0.72rem; border-radius: 4px; margin-bottom: 0; width: auto; }
+        .btn-secondary { background-color: #334155; color: #fff; }
+        .btn-secondary:hover { background-color: #475569; }
         
-        .bonus-toggle { background-color: #1e293b; color: var(--text-muted); border: 1px solid var(--border-dark); transition: all 0.3s ease; }
-        .bonus-toggle.active { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: var(--accent-blue); text-shadow: 0 0 8px rgba(59, 130, 246, 0.6); }
+        .bonus-toggle { background-color: #1e293b; color: var(--text-muted); border: 1px solid var(--border-dark); transition: all 0.3s ease; width: 100%; margin-bottom: 12px; }
+        .bonus-toggle.active { background-color: rgba(234, 179, 8, 0.2); color: #fde047; border-color: #eab308; text-shadow: 0 0 8px rgba(234, 179, 8, 0.6); }
 
-        .recipes-list { display: flex; flex-direction: column; gap: 12px; max-height: 750px; overflow-y: auto; padding-right: 5px; }
-        .recipe-card { background-color: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; padding: 14px; cursor: pointer; transition: all 0.2s; position: relative; }
-        .recipe-card:hover:not(.disabled) { border-color: var(--border-gold); }
-        .recipe-card.selected { border-color: var(--accent-green); background-color: rgba(34, 197, 94, 0.03); }
-        .recipe-card.disabled { opacity: 0.35; cursor: not-allowed; border-color: #4a1d1d; }
+        .recipes-list { display: flex; flex-direction: column; gap: 16px; max-height: 850px; overflow-y: auto; padding-right: 5px; }
         
-        .recipe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .recipe-meta h4 { font-size: 1rem; color: #fff; }
+        .recipe-card { background-color: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; padding: 16px; position: relative; transition: all 0.2s; cursor: pointer; }
+        .recipe-card:hover:not(.disabled) { border-color: #52657a; }
+        .recipe-card.disabled { opacity: 0.4; border-color: #4a1d1d; cursor: not-allowed; }
+        .recipe-card.selected-for-calculation { border-color: var(--border-gold); box-shadow: 0 0 12px rgba(200, 170, 110, 0.15); background-color: #171f2a; }
+        
+        .recipe-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 10px; }
+        .recipe-meta h4 { font-size: 1.05rem; color: #fff; display: flex; align-items: center; gap: 6px; }
         .recipe-meta span { font-size: 0.75rem; color: var(--text-muted); }
+        .recipe-actions { display: flex; gap: 6px; }
 
-        .materials-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 6px; }
-        .mat-slot { background-color: var(--bg-panel); border: 1px solid var(--border-dark); padding: 4px; border-radius: 4px; text-align: center; font-size: 0.7 Rar; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .mat-qty { color: var(--text-gold); font-weight: bold; display: block; }
+        .recipe-avg-price-box { background: rgba(200, 170, 110, 0.05); border: 1px solid rgba(200, 170, 110, 0.2); border-radius: 6px; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+        .recipe-avg-price-box.inactive { border-color: var(--border-dark); background: rgba(0,0,0,0.15); opacity: 0.6; }
 
-        .badge { font-size: 0.65rem; padding: 3px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+        .materials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; margin-top: 8px; }
+        .mat-slot { background-color: var(--bg-panel); border: 1px solid var(--border-dark); padding: 8px; border-radius: 6px; display: flex; flex-direction: column; gap: 4px; }
+        .mat-info { font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-light); }
+        .mat-qty { color: var(--text-gold); font-weight: bold; margin-right: 3px; }
+        
+        .mat-price-container { display: flex; align-items: center; background-color: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 4px; padding: 2px 4px; }
+        .mat-price-container span { font-size: 0.65rem; color: var(--text-gold); margin-right: 4px; font-weight: bold; }
+        .mat-price-input { background: transparent !important; border: none !important; padding: 2px !important; color: #fff !important; font-size: 0.75rem !important; text-align: right; width: 100%; }
+        .mat-price-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .badge { font-size: 0.65rem; padding: 3px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
         .badge.xp { background-color: rgba(200, 170, 110, 0.15); color: var(--text-gold); }
         .badge.error { background-color: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
-
-        .shopping-item { background-color: var(--bg-input); padding: 10px; border-radius: 6px; margin-bottom: 6px; display: grid; grid-template-columns: 1fr 90px 100px; align-items: center; gap: 10px; border-left: 4px solid var(--border-gold); }
-        .shopping-item .mat-name { font-weight: 500; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .shopping-item .mat-total-qty { color: var(--text-gold); font-weight: bold; text-align: right; font-size: 0.95rem; }
-        .shopping-item input { padding: 5px; font-size: 0.8rem; text-align: center; border-color: var(--border-dark); }
+        .badge.selected { background-color: rgba(34, 197, 94, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .badge.calculation-mode { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid var(--accent-blue); }
 
         .stat-box { background-color: var(--bg-input); padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
         .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--text-gold); }
@@ -74,26 +92,34 @@
 
         .ia-box { background: rgba(59, 130, 246, 0.05); border: 1px dashed var(--accent-blue); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .ia-status { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; text-align: center; word-break: break-word; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--bg-panel); border: 2px solid var(--border-gold); width: 500px; max-width: 90%; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); animation: modalSlide 0.2s ease-out; }
+        .modal-warning { color: var(--accent-red); font-size: 0.82rem; font-weight: bold; margin-bottom: 12px; line-height: 1.4; background: rgba(239, 68, 68, 0.08); padding: 8px 12px; border-radius: 6px; border: 1px dashed var(--accent-red); }
+        .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+        @keyframes modalSlide { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>Calculadora de Oficios con IA — Dofus Touch by Drayk</h1>
+        <h1>Calculadora de Recetas - Dofus Touch</h1>
     </header>
 
     <div class="main-grid">
         <div class="panel">
             <div class="ia-box">
-                <div style="font-size: 0.85rem; color: #60a5fa; font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">✨ Escáner Inteligente (Rusheo de Volúmenes)</div>
+                <div style="font-size: 0.85rem; color: #60a5fa; font-weight: bold; margin-bottom: 8px; text-transform: uppercase;">✨ Escáner Inteligente (Auto-Precios)</div>
                 <div class="form-group">
                     <label for="ia-key">Tu API Key de Gemini</label>
                     <input type="password" id="ia-key" placeholder="AIzaSy..." style="font-size: 0.8rem; padding: 6px;">
                 </div>
                 <div class="form-group">
                     <label style="background: var(--bg-input); padding: 10px; border-radius: 6px; text-align: center; cursor: pointer; border: 1px solid var(--border-dark); color: var(--text-gold); display: block;">
-                        📷 Subir Captura de Receta
+                        📷 Subir Captura con Precio Medio
                         <input type="file" id="ia-file" accept="image/*" style="display: none;">
                     </label>
                 </div>
@@ -101,20 +127,34 @@
             </div>
 
             <div class="panel-title">Progreso & Multiplicadores</div>
-            <button class="btn bonus-toggle" id="btn-bonus-xp">⚡ BONUS XP (+50%)</button>
+            
+            <button class="btn bonus-toggle" id="btn-bonus-xp">⚡ Almanax / Base (+50% XP)</button>
+            
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="chk-evento-xp">
+                    🔴 Evento de Servidor (+100% XP)
+                </label>
+            </div>
 
-            <div class="form-group" style="margin-top: 10px;">
+            <div class="form-group">
                 <label for="prof-select">Oficio Activo</label>
                 <select id="prof-select">
-                    <option value="cazador" selected>Cazador 🍖</option>
-                    <option value="joyero">Joyero 💎</option>
-                    <option value="sastre">Sastre 👕</option>
-                    <option value="zapatero">Zapatero 👞</option>
-                    <option value="campesino">Campesino 🌾</option>
-                    <option value="minero">Minero ⛏️</option>
-                    <option value="lenador">Leñador 🪓</option>
-                    <option value="pescador">Pescador 🎣</option>
-                    <option value="alquimista">Alquimista 🧪</option>
+                    <optgroup label="⚔️ Oficios de Crafteo / Artesanado">
+
+                        <option value="joyero" selected>Joyero 💎</option>
+                        <option value="sastre">Sastre 👕</option>
+                        <option value="zapatero">Zapatero 👞</option>
+
+                    </optgroup>
+                    <optgroup label="🌾 Oficios de Recolección">
+                        <option value="alquimista">Alquimista 🧪</option>
+                        <option value="campesino">Campesino 🌾</option>
+                        <option value="cazador">Cazador 🍖</option>
+                        <option value="lenador">Leñador 🪓</option>
+                        <option value="minero">Minero ⛏️</option>
+                        <option value="pescador">Pescador 🎣</option>
+                    </optgroup>
                 </select>
             </div>
 
@@ -137,47 +177,66 @@
                 <span>XP Requerida:</span>
                 <span class="stat-value" id="lbl-xp-missing">0</span>
             </div>
-            <div class="stat-box">
-                <span>Crafteos Necesarios:</span>
-                <span class="stat-value" id="lbl-crafts-needed" style="color: var(--accent-green);">0</span>
-            </div>
-
-            <div class="panel-title" style="margin-top: 20px; font-size: 1rem;" id="editor-title">Añadir / Editar Receta</div>
-            <input type="hidden" id="editing-recipe-id" value="">
             
-            <div class="form-group">
-                <label>Nombre de la Receta / Objeto</label>
-                <input type="text" id="new-name" placeholder="Ej: Carne de pájaro en conserva">
-            </div>
-            <div class="form-group">
-                <label>Ingredientes (Formato: Cantidad Nombre)</label>
-                <textarea id="new-mats" rows="5" placeholder="Ej:&#10;1 Carne de pájaro cruda&#10;1 Especias"></textarea>
-            </div>
-            
-            <button class="btn" id="btn-save-recipe">Guardar Receta / Cambios</button>
-            <button class="btn btn-danger" id="btn-delete-recipe" style="display: none;">Eliminar Receta Seleccionada</button>
-            <button class="btn" id="btn-cancel-edit" style="display: none; background: #475569; color: #fff;">Cancelar Edición</button>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">Recetas Disponibles (Cálculo según cantidad de Slots)</div>
-            <div class="recipes-list" id="panel-recipes-container"></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">Lista de Materiales del Mercado</div>
-            <div class="stat-box" style="background: rgba(200, 170, 110, 0.08); border: 1px solid var(--border-gold);">
+            <div class="stat-box" style="background: rgba(200, 170, 110, 0.08); border: 1px solid var(--border-gold); margin-top: 15px;">
                 <div>
-                    <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Presupuesto Estimado HDV</div>
-                    <div class="stat-value" id="lbl-estimated-cost" style="font-size: 1.3rem;">0 Kamas</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;" id="lbl-budget-title">Costo de Receta Seleccionada</div>
+                    <div class="stat-value" id="lbl-global-estimated-cost" style="font-size: 1.4rem;">0 Kamas</div>
                 </div>
             </div>
-            <div style="margin-bottom: 8px; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; display: grid; grid-template-columns: 1fr 90px 100px; padding: 0 10px;">
-                <span>Ingrediente</span>
-                <span style="text-align: right;">Cant. Total</span>
-                <span style="text-align: center;">Precio Ut. (k)</span>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">
+                <span>Recetas de este Oficio (Toca una para calcular su presupuesto)</span>
+                <button class="btn btn-sm" id="btn-add-manual" style="background-color: var(--text-gold); color: #000;">➕ Agregar Receta Manual</button>
             </div>
-            <ul class="shopping-list" id="panel-shopping-container"></ul>
+            <div class="recipes-list" id="panel-recipes-container"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="recipe-modal">
+    <div class="modal-content">
+        <div class="panel-title" id="modal-title" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-gold);">Añadir Nueva Receta</div>
+        <input type="hidden" id="modal-recipe-id" value="">
+        
+        <div class="form-group">
+            <label for="modal-prof-select">Oficio Asignado</label>
+            <select id="modal-prof-select">
+                <optgroup label="⚔️ Oficios de Crafteo / Artesanado">
+                        <option value="joyero" selected>Joyero 💎</option>
+                        <option value="sastre">Sastre 👕</option>
+                        <option value="zapatero">Zapatero 👞</option>
+                    </optgroup>
+                    <optgroup label="🌾 Oficios de Recolección">
+                        <option value="alquimista">Alquimista 🧪</option>
+                        <option value="campesino">Campesino 🌾</option>
+                        <option value="cazador">Cazador 🍖</option>
+                        <option value="lenador">Leñador 🪓</option>
+                        <option value="minero">Minero ⛏️</option>
+                        <option value="pescador">Pescador 🎣</option>
+                    </optgroup>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="modal-name">Nombre del Objeto / Receta</label>
+            <input type="text" id="modal-name" placeholder="Ej: Capa de justiciero">
+        </div>
+
+        <div class="modal-warning" id="modal-alert-message">
+            ⚠️ Se cargará el precio medio estimado obtenido directamente de la captura.
+        </div>
+
+        <div class="form-group">
+            <label for="modal-mats">Ingredientes (Formato: Cantidad Nombre)</label>
+            <textarea id="modal-mats" rows="6" placeholder="Ej:&#10;2 Pluma de pío roja&#10;10 Cebada"></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn" id="modal-btn-save" style="margin-bottom:0;">Guardar Receta</button>
+            <button class="btn btn-secondary" id="modal-btn-cancel" style="margin-bottom:0;">Cancelar</button>
         </div>
     </div>
 </div>
@@ -196,51 +255,56 @@
         91: 388582, 92: 406106, 93: 424486, 94: 443772, 95: 464016, 96: 485274, 97: 507604, 98: 531071, 99: 555741, 100: 581687
     };
 
-    const xpPerSlots = { 1: 10, 2: 20, 3: 40, 4: 85, 5: 170, 6: 290, 7: 440, 8: 650 };
+    // TABLA SOLICITADA CORREGIDA FIJA ⚡
+    const xpPerSlots = { 1: 5, 2: 10, 3: 25, 4: 50, 5: 100, 6: 250, 7: 500, 8: 1000 };
     const maxLevelPerSlot = { 1: 40, 2: 60, 3: 80, 4: 100, 5: 100, 6: 100, 7: 100, 8: 100 };
 
     const defaultRecipes = {
-        cazador: [
-            { id: 'c_1', name: 'Especias', mats: [{q: 1, n: 'Cereza'}, {q: 1, n: 'Medida de pimienta'}] },
-            { id: 'c_2', name: 'Carne de pájaro en conserva', mats: [{q: 1, n: 'Carne de pájaro cruda'}, {q: 1, n: 'Especias'}] },
-            { id: 'c_3', name: 'Carne de larva en conserva', mats: [{q: 1, n: 'Carne de larva cruda'}, {q: 1, n: 'Especias'}] }
-        ],
         sastre: [
-            { id: 's_1', name: 'Capa de justiciero', mats: [{q: 2, n: 'Pluma de pío roja'}, {q: 10, n: 'Brote de cáñamo'}, {q: 5, n: 'Cuero de jalató'}] }
+            { id: 's_1', name: 'Capa de justiciero', avgPrice: 1300, forceIngredients: false, mats: [{q: 2, n: 'Pluma de pío roja'}, {q: 10, n: 'Cebada'}, {q: 5, n: 'Cuero de jabalí'}] }
         ]
     };
 
     let recipesData;
     try {
-        const savedRecipes = localStorage.getItem('dofus_touch_v8_recipes');
+        const savedRecipes = localStorage.getItem('dofus_touch_v11_recipes');
         recipesData = savedRecipes ? JSON.parse(savedRecipes) : defaultRecipes;
     } catch(e) { recipesData = defaultRecipes; }
 
     let resourcePrices = {};
     try {
-        const savedPrices = localStorage.getItem('dofus_touch_v8_prices');
+        const savedPrices = localStorage.getItem('dofus_touch_v11_prices');
         if (savedPrices) resourcePrices = JSON.parse(savedPrices);
     } catch(e) { resourcePrices = {}; }
 
-    let selectedRecipeId = null;
-    let isBonusXpActive = false;
+    let selectedRecipeId = localStorage.getItem('dofus_touch_v11_selected_id') || null;
+    
+    let isBaseBonusActive = false;
+    let isPackAbonoActive = false;
+    let isEventoXpActive = false;
+    
+    // Bandera para romper bucles infinitos de inputs cruzados
+    let isUpdating = false;
 
     const selectProf = document.getElementById('prof-select');
     const inputLevel = document.getElementById('num-level');
     const inputXp = document.getElementById('num-xp');
     const inputTarget = document.getElementById('num-target');
     const lblXpMissing = document.getElementById('lbl-xp-missing');
-    const lblCraftsNeeded = document.getElementById('lbl-crafts-needed');
-    const lblEstimatedCost = document.getElementById('lbl-estimated-cost');
+    const lblGlobalEstimatedCost = document.getElementById('lbl-global-estimated-cost');
+    const lblBudgetTitle = document.getElementById('lbl-budget-title');
     const containerRecipes = document.getElementById('panel-recipes-container');
-    const containerShopping = document.getElementById('panel-shopping-container');
-    const editorTitle = document.getElementById('editor-title');
-    const editingId = document.getElementById('editing-recipe-id');
-    const newName = document.getElementById('new-name');
-    const newMats = document.getElementById('new-mats');
-    const btnDelete = document.getElementById('btn-delete-recipe');
-    const btnCancel = document.getElementById('btn-cancel-edit');
     
+    const recipeModal = document.getElementById('recipe-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalRecipeId = document.getElementById('modal-recipe-id');
+    const modalProfSelect = document.getElementById('modal-prof-select');
+    const modalName = document.getElementById('modal-name');
+    const modalMats = document.getElementById('modal-mats');
+    const modalAlertMessage = document.getElementById('modal-alert-message');
+    const modalBtnSave = document.getElementById('modal-btn-save');
+    const modalBtnCancel = document.getElementById('modal-btn-cancel');
+
     const iaKeyInput = document.getElementById('ia-key');
     const iaFileInput = document.getElementById('ia-file');
     const iaStatus = document.getElementById('ia-status');
@@ -252,14 +316,14 @@
         localStorage.setItem('gemini_api_key', e.target.value.trim());
     });
 
+    // ESCÁNER IA
     iaFileInput.addEventListener('change', async (e) => {
         const key = iaKeyInput.value.trim();
         if(!key) { alert("Por favor, ingresa tu API Key de Gemini."); return; }
-        
         const file = e.target.files[0];
         if(!file) return;
 
-        iaStatus.innerText = "⏳ Analizando imagen con Gemini 2.5...";
+        iaStatus.innerText = "⏳ Extrayendo receta y precio medio global...";
         iaStatus.style.color = "var(--text-gold)";
 
         try {
@@ -267,103 +331,53 @@
             const base64Content = base64Data.split(',')[1];
             const mimeType = file.type;
 
-            // Prompt modificado: Fuerza el descarte total de la cantidad poseída actual
-            const promptText = `Analiza esta captura de pantalla de un ítem de Dofus Touch.
-            Extrae el nombre del ítem principal y la lista de materiales requeridos para su fabricación.
-            
-            REGLA ESTRICTA DE CANTIDADES PARA RUSHEO: 
-            En cada material verás un indicador numérico en forma de fracción (ejemplo: "26/2", "0/10", "7/20"). IGNORA por completo el número de la izquierda (la cantidad que tiene el personaje). A nosotros solo nos interesa calcular desde cero. Toma EXCLUSIVAMENTE el número de la DERECHA (el denominador), el cual representa la cantidad neta que pide la receta base.
-            Por ejemplo: 
-            - Si dice "26/2", la cantidad requerida es 2.
-            - Si dice "0/10", la cantidad requerida es 10.
-            - Si dice "7/20", la cantidad requerida es 20.
+            const promptText = `Analiza este item de Dofus Touch. Extrae nombre, ingredientes e identifica el "Precio medio : X K". Devuelve UNICAMENTE un objeto JSON plano sin markdown:\n{"name": "Nombre Objeto", "prof": "oficio_id", "avgPrice": NUMERO_PRECIO_MEDIO, "mats": [{"q": REQUERIDO, "n": "Nombre mat"}]}`;
 
-            Devuelve UNICAMENTE un objeto JSON plano estructurado exactamente así, sin markdown ni texto adicional:
-            {"name": "Nombre exacto del objeto", "mats": [{"q": NÚMERO_DE_LA_DERECHA, "n": "Nombre del ingrediente"}]}`;
-
-            // ENDPOINT ACTUALIZADO A GEMINI-2.5-FLASH
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: promptText },
-                            { inlineData: { mimeType: mimeType, data: base64Content } }
-                        ]
-                    }]
-                })
+                body: JSON.stringify({ contents: [{ parts: [{ text: promptText }, { inlineData: { mimeType: mimeType, data: base64Content } }] }] })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error?.message || "Error del servidor de Google API");
-            }
-
+            if (!response.ok) throw new Error("Error en respuesta");
             const data = await response.json();
-            
-            if(!data.candidates || data.candidates.length === 0) {
-                throw new Error("No se obtuvo respuesta del modelo. Revisa tu saldo/cuota de API Key.");
-            }
-
             let rawText = data.candidates[0].content.parts[0].text.trim();
             rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
-            
             const result = JSON.parse(rawText);
 
             if(result.name && result.mats) {
-                newName.value = result.name;
-                newMats.value = result.mats.map(m => `${m.q} ${m.n}`).join('\n');
-                iaStatus.innerText = "✅ ¡Receta base cargada al 100%!";
+                modalTitle.innerText = "🔎 Verificar Receta Detectada";
+                modalRecipeId.value = ""; 
+                modalName.value = result.name;
+                modalMats.value = result.mats.map(m => `${m.q} ${m.n}`).join('\n');
+                modalAlertMessage.style.display = "block";
+                modalRecipeId.setAttribute('data-temp-avg', result.avgPrice || 0);
+                modalProfSelect.value = (result.prof && Array.from(modalProfSelect.options).some(opt => opt.value === result.prof)) ? result.prof : selectProf.value;
+                recipeModal.classList.add('open');
+                iaStatus.innerText = "¡Escaneo completado!";
                 iaStatus.style.color = "var(--accent-green)";
-            } else {
-                throw new Error("El JSON devuelto carece de la estructura esperada.");
             }
-
         } catch (error) {
-            console.error("Error detallado:", error);
-            iaStatus.innerText = `❌ ${error.message}`;
+            iaStatus.innerText = `❌ Error en el análisis.`;
             iaStatus.style.color = "var(--accent-red)";
         }
+        iaFileInput.value = "";
     });
 
     function convertFileToBase64(file) {
         return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
         });
     }
 
-    // MANIPULADORES GENERALES DE LA CALCULADORA
-    document.getElementById('btn-bonus-xp').addEventListener('click', (e) => {
-        isBonusXpActive = !isBonusXpActive;
-        e.target.classList.toggle('active', isBonusXpActive);
-        updateCalculator();
-    });
+    modalBtnCancel.addEventListener('click', () => recipeModal.classList.remove('open'));
+    modalBtnSave.addEventListener('click', () => {
+        const name = modalName.value.trim(); const rawMats = modalMats.value.trim().split('\n');
+        const targetedProf = modalProfSelect.value; const idToSave = modalRecipeId.value;
+        const scannedAvgPrice = parseInt(modalRecipeId.getAttribute('data-temp-avg')) || 0;
 
-    inputLevel.addEventListener('input', () => {
-        let lvl = Math.min(100, Math.max(1, parseInt(inputLevel.value) || 1));
-        inputLevel.value = lvl; inputXp.value = xpTable[lvl] || 0; updateCalculator();
-    });
-    inputXp.addEventListener('input', () => {
-        let xp = Math.max(0, parseInt(inputXp.value) || 0);
-        let calculatedLvl = 1;
-        for (let l = 1; l <= 100; l++) { if (xp >= xpTable[l]) calculatedLvl = l; else break; }
-        inputLevel.value = calculatedLvl; updateCalculator();
-    });
-    selectProf.addEventListener('change', () => { selectedRecipeId = null; resetEditor(); updateCalculator(); });
-    inputTarget.addEventListener('input', updateCalculator);
-
-    document.getElementById('btn-save-recipe').addEventListener('click', () => {
-        const name = newName.value.trim();
-        const rawMats = newMats.value.trim().split('\n');
-        const activeProf = selectProf.value;
-        const idToSave = editingId.value;
-
-        if(!name || rawMats.length === 0 || rawMats[0] === "") { alert("Completa los campos."); return; }
-
+        if(!name || rawMats.length === 0 || rawMats[0] === "") { alert("Campos vacíos."); return; }
         let parsedMats = [];
         rawMats.forEach(line => {
             let spaceIdx = line.trim().indexOf(' ');
@@ -374,65 +388,91 @@
             }
         });
 
-        if (!recipesData[activeProf]) recipesData[activeProf] = [];
-
+        if (!recipesData[targetedProf]) recipesData[targetedProf] = [];
+        let savedId = idToSave;
         if(idToSave) {
-            let idx = recipesData[activeProf].findIndex(r => r.id === idToSave);
-            if(idx !== -1) {
-                recipesData[activeProf][idx].name = name;
-                recipesData[activeProf][idx].mats = parsedMats;
-            }
+            if(selectProf.value !== targetedProf) recipesData[selectProf.value] = recipesData[selectProf.value].filter(r => r.id !== idToSave);
+            let idx = recipesData[targetedProf].findIndex(r => r.id === idToSave);
+            if(idx !== -1) { recipesData[targetedProf][idx].name = name; recipesData[targetedProf][idx].mats = parsedMats; }
         } else {
-            recipesData[activeProf].push({ id: 'recipe_' + Date.now(), name: name, mats: parsedMats });
+            savedId = 'recipe_' + Date.now();
+            recipesData[targetedProf].push({ id: savedId, name: name, avgPrice: scannedAvgPrice, forceIngredients: false, mats: parsedMats });
         }
 
-        localStorage.setItem('dofus_touch_v8_recipes', JSON.stringify(recipesData));
-        resetEditor();
+        localStorage.setItem('dofus_touch_v11_recipes', JSON.stringify(recipesData));
+        selectProf.value = targetedProf; selectedRecipeId = savedId;
+        localStorage.setItem('dofus_touch_v11_selected_id', selectedRecipeId);
+        recipeModal.classList.remove('open'); modalRecipeId.removeAttribute('data-temp-avg');
         updateCalculator();
     });
 
-    btnDelete.addEventListener('click', () => {
-        const activeProf = selectProf.value;
-        const idToDelete = editingId.value;
-        if(idToDelete && confirm("¿Eliminar receta?")) {
-            recipesData[activeProf] = recipesData[activeProf].filter(r => r.id !== idToDelete);
-            localStorage.setItem('dofus_touch_v8_recipes', JSON.stringify(recipesData));
-            selectedRecipeId = null;
-            resetEditor();
-            updateCalculator();
-        }
+    document.getElementById('btn-add-manual').addEventListener('click', () => {
+        modalTitle.innerText = "➕ Agregar Receta Manual"; modalRecipeId.value = "";
+        modalProfSelect.value = selectProf.value; modalName.value = ""; modalMats.value = "";
+        modalAlertMessage.style.display = "none"; recipeModal.classList.add('open');
     });
 
-    btnCancel.addEventListener('click', resetEditor);
+    // MULTIPLICADORES DE INTERFAZ
+    document.getElementById('btn-bonus-xp').addEventListener('click', (e) => {
+        isBaseBonusActive = !isBaseBonusActive;
+        e.target.classList.toggle('active', isBaseBonusActive);
+        updateCalculator();
+    });
 
-    function loadRecipeIntoEditor(recipe) {
-        editorTitle.innerText = "Modificar / Editar Receta";
-        editingId.value = recipe.id;
-        newName.value = recipe.name;
-        newMats.value = recipe.mats.map(m => `${m.q} ${m.n}`).join('\n');
-        btnDelete.style.display = 'block';
-        btnCancel.style.display = 'block';
-    }
+    document.getElementById('chk-pack-abono').addEventListener('change', (e) => {
+        isPackAbonoActive = e.target.checked;
+        updateCalculator();
+    });
 
-    function resetEditor() {
-        editorTitle.innerText = "Añadir Nueva Receta";
-        editingId.value = "";
-        newName.value = "";
-        newMats.value = "";
-        btnDelete.style.display = 'none';
-        btnCancel.style.display = 'none';
-        iaStatus.innerText = "Listo para escanear.";
-        iaStatus.style.color = "var(--text-muted)";
-    }
+    document.getElementById('chk-evento-xp').addEventListener('change', (e) => {
+        isEventoXpActive = e.target.checked;
+        updateCalculator();
+    });
 
+    // EVENTOS LOGICOS SIN CICLOS INFINITOS ⚡
+    inputLevel.addEventListener('input', () => {
+        if (isUpdating) return;
+        isUpdating = true;
+        let lvl = Math.min(100, Math.max(1, parseInt(inputLevel.value) || 1));
+        inputXp.value = xpTable[lvl] || 0; 
+        isUpdating = false;
+        updateCalculator();
+    });
+
+    inputXp.addEventListener('input', () => {
+        if (isUpdating) return;
+        isUpdating = true;
+        let xp = Math.max(0, parseInt(inputXp.value) || 0);
+        let calculatedLvl = 1;
+        for (let l = 1; l <= 100; l++) { if (xp >= xpTable[l]) calculatedLvl = l; else break; }
+        inputLevel.value = calculatedLvl; 
+        isUpdating = false;
+        updateCalculator();
+    });
+
+    selectProf.addEventListener('change', () => {
+        selectedRecipeId = null; localStorage.removeItem('dofus_touch_v11_selected_id');
+        updateCalculator();
+    });
+    
+    inputTarget.addEventListener('input', () => {
+        updateCalculator();
+    });
+
+    // CONTROL CENTRAL DE RENDERIZADO Y CÁLCULO
     function updateCalculator() {
         const activeProf = selectProf.value;
         const currentXp = parseInt(inputXp.value) || 0;
         const targetLvl = parseInt(inputTarget.value) || 40;
 
+        // Determinar nivel real basado en la XP que está actualmente en el input
         let calculatedLvl = 1;
         for (let l = 1; l <= 100; l++) { if (currentXp >= xpTable[l]) calculatedLvl = l; else break; }
-        inputLevel.value = calculatedLvl;
+        
+        // Sincronizar visualmente la casilla de nivel sin disparar eventos destructivos
+        if(parseInt(inputLevel.value) !== calculatedLvl && !isUpdating) {
+            inputLevel.value = calculatedLvl;
+        }
 
         const targetXp = xpTable[targetLvl] || 0;
         const xpMissing = Math.max(0, targetXp - currentXp);
@@ -441,119 +481,229 @@
         const currentRecipes = recipesData[activeProf] || [];
         containerRecipes.innerHTML = '';
 
+        if(selectedRecipeId && !currentRecipes.some(r => r.id === selectedRecipeId)) selectedRecipeId = null;
+        if(!selectedRecipeId && currentRecipes.length > 0) selectedRecipeId = currentRecipes[0].id;
+
+        if(currentRecipes.length === 0) {
+            containerRecipes.innerHTML = '<div style="color: var(--text-muted); font-size:0.9rem; text-align:center; padding: 30px;">No hay recetas en este oficio.</div>';
+            lblGlobalEstimatedCost.innerText = '0 Kamas';
+            lblBudgetTitle.innerText = "Costo de Receta Seleccionada";
+            return;
+        }
+
         currentRecipes.forEach(recipe => {
             let numSlots = Math.min(8, Math.max(1, recipe.mats.length));
             const maxLvlAllowed = maxLevelPerSlot[numSlots] || 100;
             const isObsolete = calculatedLvl >= maxLvlAllowed;
-            const isDisabled = isObsolete;
+
+            // Multiplicadores de experiencia acumulativos
+            let xpMultiplier = 1.0;
+            if (isBaseBonusActive) xpMultiplier += 0.5;
+            if (isPackAbonoActive) xpMultiplier += 1.0;
+            if (isEventoXpActive) xpMultiplier += 1.0;
 
             let baseXp = xpPerSlots[numSlots] || 10;
-            if(isBonusXpActive) baseXp = Math.floor(baseXp * 1.5);
+            let finalXpPerCraft = Math.floor(baseXp * xpMultiplier);
+
+            // Redondeo absoluto Math.ceil para asegurar que alcances la meta exacta
+            const craftsNeeded = (isObsolete || xpMissing <= 0) ? 0 : Math.ceil(xpMissing / finalXpPerCraft);
+            const isSelected = recipe.id === selectedRecipeId;
+            const useAvgPriceMode = recipe.avgPrice > 0 && !recipe.forceIngredients;
 
             const card = document.createElement('div');
-            card.className = `recipe-card ${isDisabled ? 'disabled' : ''} ${selectedRecipeId === recipe.id ? 'selected' : ''}`;
+            card.className = `recipe-card ${isObsolete ? 'disabled' : ''} ${isSelected ? 'selected-for-calculation' : ''}`;
+
+            let avgPriceHTML = `
+                <div class="recipe-avg-price-box ${!useAvgPriceMode ? 'inactive' : ''}" onclick="event.stopPropagation();">
+                    <div style="font-size:0.78rem;">
+                        <strong>💰 Precio Medio del Craft:</strong> 
+                        <span style="color:var(--text-gold); font-size:0.72rem; margin-left:4px;">(Prioritario si es > 0)</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px; width:140px;">
+                        <input type="number" class="recipe-avg-input" value="${recipe.avgPrice || 0}" min="0" style="padding:4px 8px; font-size:0.8rem; text-align:right;">
+                        ${recipe.forceIngredients ? '<button class="btn btn-sm btn-secondary btn-reset-mode" title="Volver a usar precio medio" style="padding:4px 6px;">🔄</button>' : ''}
+                    </div>
+                </div>
+            `;
 
             let gridHTML = '<div class="materials-grid">';
-            recipe.mats.forEach(m => { gridHTML += `<div class="mat-slot" title="${m.n}"><span class="mat-qty">${m.q}x</span>${m.n}</div>`; });
+            recipe.mats.forEach(m => {
+                const totalNeeded = m.q * craftsNeeded;
+                const savedPrice = resourcePrices[m.n] || 0;
+
+                gridHTML += `
+                    <div class="mat-slot">
+                        <div class="mat-info" title="${m.n}">
+                            <span class="mat-qty">${m.q}x</span> ${m.n}
+                        </div>
+                        <div style="font-size: 0.68rem; color: var(--text-muted); margin-bottom: 2px;">
+                            Total: <strong style="color: #fff;">${totalNeeded.toLocaleString()}</strong> u.
+                        </div>
+                        <div class="mat-price-container" onclick="event.stopPropagation();">
+                            <span>K:</span>
+                            <input type="number" class="mat-price-input" data-name="${m.n}" value="${savedPrice}" placeholder="0" min="0">
+                        </div>
+                    </div>
+                `;
+            });
             gridHTML += '</div>';
 
-            let statusBadge = `<span class="badge xp">+${baseXp} XP</span>`;
+            let statusBadge = `<span class="badge xp">+${finalXpPerCraft} XP (${craftsNeeded.toLocaleString()} crafteos)</span>`;
             if (isObsolete) statusBadge = `<span class="badge error">Límite Lvl ${maxLvlAllowed}</span>`;
+            
+            let modeBadge = useAvgPriceMode 
+                ? `<span class="badge calculation-mode">Modo: Precio Medio</span>` 
+                : `<span class="badge calculation-mode" style="background:rgba(168,85,247,0.2); color:#c084fc; border-color:#a855f7;">Modo: Ingredientes</span>`;
+            
+            let selectionBadge = isSelected ? `<span class="badge selected">🎯 Activa</span>` : '';
 
             card.innerHTML = `
                 <div class="recipe-header">
                     <div class="recipe-meta">
-                        <h4>${recipe.name}</h4>
+                        <h4>${recipe.name} ${selectionBadge} ${modeBadge}</h4>
                         <span>Slots: ${numSlots} | Útil hasta lvl ${maxLvlAllowed}</span>
                     </div>
-                    ${statusBadge}
+                    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                        ${statusBadge}
+                        <div class="recipe-actions" onclick="event.stopPropagation();">
+                            <button class="btn btn-sm btn-secondary btn-edit-recipe" data-id="${recipe.id}">⚙️</button>
+                            <button class="btn btn-sm btn-danger btn-delete-recipe" data-id="${recipe.id}">🗑️</button>
+                        </div>
+                    </div>
                 </div>
+                ${avgPriceHTML}
                 ${gridHTML}
             `;
 
             card.addEventListener('click', () => {
+                if(isObsolete) return;
                 selectedRecipeId = recipe.id;
-                loadRecipeIntoEditor(recipe);
-                document.querySelectorAll('.recipe-card').forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                renderShoppingList(recipe, xpMissing, baseXp, isObsolete);
+                localStorage.setItem('dofus_touch_v11_selected_id', selectedRecipeId);
+                updateCalculator();
+            });
+
+            const avgInput = card.querySelector('.recipe-avg-input');
+            avgInput.addEventListener('input', (e) => {
+                const val = Math.max(0, parseInt(e.target.value) || 0);
+                recipe.avgPrice = val;
+                if(val === 0) recipe.forceIngredients = true;
+                saveRecipesState();
+                calculateTargetBudget();
+            });
+
+            const resetBtn = card.querySelector('.btn-reset-mode');
+            if(resetBtn) {
+                resetBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    recipe.forceIngredients = false;
+                    saveRecipesState();
+                    updateCalculator();
+                });
+            }
+
+            card.querySelectorAll('.mat-price-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const resourceName = e.target.getAttribute('data-name');
+                    const priceValue = Math.max(0, parseInt(e.target.value) || 0);
+                    
+                    document.querySelectorAll(`.mat-price-input[data-name="${resourceName}"]`).forEach(inp => {
+                        if(inp !== e.target) inp.value = priceValue;
+                    });
+
+                    resourcePrices[resourceName] = priceValue;
+                    localStorage.setItem('dofus_touch_v11_prices', JSON.stringify(resourcePrices));
+
+                    if(!recipe.forceIngredients) {
+                        recipe.forceIngredients = true;
+                        saveRecipesState();
+                        setTimeout(updateCalculator, 10); 
+                    } else {
+                        calculateTargetBudget();
+                    }
+                });
+            });
+
+            card.querySelector('.btn-edit-recipe').addEventListener('click', () => {
+                modalTitle.innerText = "⚙️ Editar Receta"; modalRecipeId.value = recipe.id;
+                modalProfSelect.value = activeProf; modalName.value = recipe.name;
+                modalMats.value = recipe.mats.map(m => `${m.q} ${m.n}`).join('\n');
+                modalAlertMessage.style.display = "none"; recipeModal.classList.add('open');
+            });
+
+            card.querySelector('.btn-delete-recipe').addEventListener('click', () => {
+                if(confirm(`¿Eliminar receta?`)) {
+                    recipesData[activeProf] = recipesData[activeProf].filter(r => r.id !== recipe.id);
+                    saveRecipesState();
+                    if(selectedRecipeId === recipe.id) selectedRecipeId = null;
+                    updateCalculator();
+                }
             });
 
             containerRecipes.appendChild(card);
         });
 
-        const activeSelected = currentRecipes.find(r => r.id === selectedRecipeId);
-        if(activeSelected) {
-            let slots = Math.min(8, Math.max(1, activeSelected.mats.length));
-            let calculatedXp = xpPerSlots[slots] || 10;
-            if(isBonusXpActive) calculatedXp = Math.floor(calculatedXp * 1.5);
-            const maxLvlAllowed = maxLevelPerSlot[slots] || 100;
-            const isObsolete = calculatedLvl >= maxLvlAllowed;
+        calculateTargetBudget();
+    }
 
-            renderShoppingList(activeSelected, xpMissing, calculatedXp, isObsolete);
+    function saveRecipesState() {
+        localStorage.setItem('dofus_touch_v11_recipes', JSON.stringify(recipesData));
+    }
+
+    function calculateTargetBudget() {
+        const activeProf = selectProf.value;
+        const currentXp = parseInt(inputXp.value) || 0;
+        const targetLvl = parseInt(inputTarget.value) || 40;
+        
+        let calculatedLvl = 1;
+        for (let l = 1; l <= 100; l++) { if (currentXp >= xpTable[l]) calculatedLvl = l; else break; }
+        const targetXp = xpTable[targetLvl] || 0;
+        const xpMissing = Math.max(0, targetXp - currentXp);
+
+        const currentRecipes = recipesData[activeProf] || [];
+        const activeRecipe = currentRecipes.find(r => r.id === selectedRecipeId);
+
+        if (!activeRecipe || xpMissing <= 0) {
+            lblGlobalEstimatedCost.innerText = '0 Kamas';
+            lblBudgetTitle.innerText = "Costo de Receta Seleccionada";
+            return;
+        }
+
+        let numSlots = Math.min(8, Math.max(1, activeRecipe.mats.length));
+        const maxLvlAllowed = maxLevelPerSlot[numSlots] || 100;
+        
+        if (calculatedLvl >= maxLvlAllowed) {
+            lblGlobalEstimatedCost.innerText = '0 Kamas (Receta Obsoleta)';
+            lblBudgetTitle.innerText = `Costo: ${activeRecipe.name}`;
+            return;
+        }
+
+        let xpMultiplier = 1.0;
+        if (isBaseBonusActive) xpMultiplier += 0.5;
+        if (isPackAbonoActive) xpMultiplier += 1.0;
+        if (isEventoXpActive) xpMultiplier += 1.0;
+
+        let baseXp = xpPerSlots[numSlots] || 5;
+        let finalXpPerCraft = Math.floor(baseXp * xpMultiplier);
+        
+        const craftsNeeded = Math.ceil(xpMissing / finalXpPerCraft);
+        let recipeTotalKamas = 0;
+        const useAvgPriceMode = activeRecipe.avgPrice > 0 && !activeRecipe.forceIngredients;
+
+        if (useAvgPriceMode) {
+            recipeTotalKamas = craftsNeeded * activeRecipe.avgPrice;
+            lblBudgetTitle.innerText = `Costo usando Precio Medio: ${activeRecipe.name}`;
         } else {
-            lblCraftsNeeded.innerText = '0';
-            lblEstimatedCost.innerText = '0 Kamas';
-            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">Haz clic en una receta para calcular.</li>';
-        }
-    }
-
-    function renderShoppingList(recipe, xpMissing, currentXpGained, isObsolete) {
-        if(isObsolete) {
-            lblCraftsNeeded.innerText = '0';
-            lblEstimatedCost.innerText = '0 Kamas';
-            containerShopping.innerHTML = '<li style="color: var(--accent-red); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">Esta receta ya no otorga experiencia a tu nivel actual.</li>';
-            return;
-        }
-
-        if(xpMissing === 0) {
-            lblCraftsNeeded.innerText = '0';
-            lblEstimatedCost.innerText = '0 Kamas';
-            containerShopping.innerHTML = '<li style="color: var(--text-muted); font-size:0.8rem; text-align:center; padding: 20px; grid-column: span 3;">¡Nivel objetivo alcanzado!</li>';
-            return;
-        }
-
-        const craftsNeeded = Math.ceil(xpMissing / currentXpGained);
-        lblCraftsNeeded.innerText = craftsNeeded.toLocaleString();
-
-        containerShopping.innerHTML = '';
-        recipe.mats.forEach(m => {
-            const totalQty = m.q * craftsNeeded;
-            const savedPrice = resourcePrices[m.n] || 0;
-
-            const li = document.createElement('li');
-            li.className = 'shopping-item';
-            li.innerHTML = `
-                <span class="mat-name" title="${m.n}">${m.n}</span>
-                <span class="mat-total-qty">${totalQty.toLocaleString()}</span>
-                <div><input type="number" class="hdv-price-input" data-name="${m.n}" value="${savedPrice}" min="0"></div>
-            `;
-            containerShopping.appendChild(li);
-        });
-
-        document.querySelectorAll('.hdv-price-input').forEach(input => {
-            input.addEventListener('input', (e) => {
-                const resourceName = e.target.getAttribute('data-name');
-                const priceValue = Math.max(0, parseInt(e.target.value) || 0);
-                resourcePrices[resourceName] = priceValue;
-                localStorage.setItem('dofus_touch_v8_prices', JSON.stringify(resourcePrices));
-                calculateTotalSum(craftsNeeded, recipe.mats);
+            activeRecipe.mats.forEach(m => {
+                const priceUnit = resourcePrices[m.n] || 0;
+                recipeTotalKamas += (m.q * craftsNeeded) * priceUnit;
             });
-        });
+            lblBudgetTitle.innerText = `Costo usando Ingredientes: ${activeRecipe.name}`;
+        }
 
-        calculateTotalSum(craftsNeeded, recipe.mats);
+        lblGlobalEstimatedCost.innerText = recipeTotalKamas.toLocaleString() + ' Kamas';
     }
 
-    function calculateTotalSum(craftsNeeded, mats) {
-        let grandTotal = 0;
-        mats.forEach(m => {
-            const totalQty = m.q * craftsNeeded;
-            const priceUnit = resourcePrices[m.n] || 0;
-            grandTotal += totalQty * priceUnit;
-        });
-        lblEstimatedCost.innerText = grandTotal.toLocaleString() + ' Kamas';
-    }
-
+    // Inicialización del flujo
     updateCalculator();
 </script>
 
